@@ -44,11 +44,13 @@ class ViewController: UIViewController {
             return
         }
         
-        FilterService().applyFilter(inputImage: sourceImage) { filteredImage in
-            DispatchQueue.main.async {
-                self.photoImageView.image = filteredImage
-            }
-        }
+        FilterService().applyFilter(to: sourceImage)
+            .subscribe(onNext: { filteredImage in
+                
+                DispatchQueue.main.async {
+                    self.photoImageView.image = filteredImage
+                }
+            }).disposed(by: disposeBag)
     }
     
 }

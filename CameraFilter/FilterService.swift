@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import CoreImage
+import RxSwift
 
 class FilterService {
     private var context: CIContext
@@ -16,7 +17,16 @@ class FilterService {
         self.context = CIContext()
     }
     
-     func applyFilter(inputImage: UIImage, completion: @escaping ((UIImage) -> ())) {
+    func applyFilter(to inputImage: UIImage) -> Observable<UIImage> {
+        return Observable<UIImage>.create { observer in
+            self.applyFilter(inputImage: inputImage) { filteredImage in
+                observer.onNext(filteredImage)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    private func applyFilter(inputImage: UIImage, completion: @escaping ((UIImage) -> ())) {
         let filter = CIFilter(name: "CICMYKHalftone")!
         filter.setValue(4.0, forKey: kCIInputWidthKey)
         
